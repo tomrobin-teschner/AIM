@@ -1,0 +1,2 @@
+add_subdirectory(coordinateArray)
+add_subdirectory(meshReading)
