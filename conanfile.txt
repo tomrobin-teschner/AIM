@@ -1,0 +1,9 @@
+[requires]
+eigen/3.3.9
+gtest/1.10.0
+nlohmann_json/3.9.1
+cgns/3.4.1
+doxygen/1.9.1
+
+[generators]
+cmake_find_package
