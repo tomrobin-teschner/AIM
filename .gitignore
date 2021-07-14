@@ -1,5 +1,9 @@
 # ignore build folder
 build/*
 
+# ignore the generated documentation
+docs/html/*
+docs/latex/*
+
 # ignore pointwise files
 *.pw

@@ -1,6 +1,6 @@
 # initialise project
 cmake_minimum_required(VERSION 3.16)
-project(AIM VERSION 0.1.0 LANGUAGES CXX)
+project(AIM VERSION 0.2.0 LANGUAGES CXX)
 
 # use c++20 standard
 set(CMAKE_CXX_STANDARD 20)
@@ -12,6 +12,9 @@ set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 # create shared library
 add_library(${CMAKE_PROJECT_NAME} SHARED "")
 
+# include root directory so header files can be specified relative to the project root
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR})
+
 # find required libraries
 find_package(Eigen3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
@@ -22,7 +25,7 @@ find_package(Threads REQUIRED)
 # link against libraries
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Eigen3::Eigen3)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE cgns::cgns)
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC cgns::cgns)
 
 # add source files to main target by traversing source folders
 add_subdirectory(src)
