@@ -24,7 +24,7 @@ namespace Mesh {
 /// @{
 template <int Index>
 auto MeshReader::readCoordinate() -> MeshReader::CoordinateType {
-  cgsize_t begin{1}, end{static_cast<cgsize_t>(numberOfVertices_)};
+  AIM::Types::CGNSInt begin{1}, end{static_cast<AIM::Types::CGNSInt>(numberOfVertices_)};
   auto coordinate = MeshReader::CoordinateType(numberOfVertices_);
   auto coordinateName = std::vector<std::string>{"CoordinateX", "CoordinateY", "CoordinateZ"};
   auto name = coordinateName[Index].c_str();

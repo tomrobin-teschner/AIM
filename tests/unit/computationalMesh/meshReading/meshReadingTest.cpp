@@ -12,6 +12,7 @@
 // AIM include headers
 #include "src/computationalMesh/meshReading/meshReading.hpp"
 #include "src/types/enums.hpp"
+#include "src/types/types.hpp"
 
 class MeshReadingFixture : public ::testing::Test {
 public:
@@ -62,21 +63,21 @@ TEST_F(MeshReadingFixture, testConnectivityTable) {
   const auto sut = meshReader_.readConnectivityTable();
 
   // assert
-  auto rhs = std::vector<int>{9, 3, 4};
+  auto rhs = std::vector<AIM::Types::UInt>{9, 3, 4};
   EXPECT_EQ(sut[0], rhs);
-  rhs = std::vector<int>{9, 1, 2};
+  rhs = std::vector<AIM::Types::UInt>{9, 1, 2};
   EXPECT_EQ(sut[1], rhs);
-  rhs = std::vector<int>{9, 2, 3};
+  rhs = std::vector<AIM::Types::UInt>{9, 2, 3};
   EXPECT_EQ(sut[2], rhs);
-  rhs = std::vector<int>{9, 10, 8};
+  rhs = std::vector<AIM::Types::UInt>{9, 10, 8};
   EXPECT_EQ(sut[3], rhs);
-  rhs = std::vector<int>{9, 8, 1};
+  rhs = std::vector<AIM::Types::UInt>{9, 8, 1};
   EXPECT_EQ(sut[4], rhs);
-  rhs = std::vector<int>{4, 10, 9};
+  rhs = std::vector<AIM::Types::UInt>{4, 10, 9};
   EXPECT_EQ(sut[5], rhs);
-  rhs = std::vector<int>{5, 6, 10, 4};
+  rhs = std::vector<AIM::Types::UInt>{5, 6, 10, 4};
   EXPECT_EQ(sut[6], rhs);
-  rhs = std::vector<int>{6, 7, 8, 10};
+  rhs = std::vector<AIM::Types::UInt>{6, 7, 8, 10};
   EXPECT_EQ(sut[7], rhs);
 }
 

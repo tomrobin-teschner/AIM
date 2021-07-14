@@ -137,9 +137,9 @@ class MeshReader {
   /// @{
 public:
   using CoordinateType = typename std::vector<AIM::Types::FloatType>;
-  using ConnectivityTableType = typename std::vector<std::vector<cgsize_t>>;
+  using ConnectivityTableType = typename std::vector<std::vector<AIM::Types::UInt>>;
   using BoundaryConditionType = typename std::vector<std::pair<int, std::string>>;
-  using BoundaryConditionConnectivityType = typename std::vector<std::vector<cgsize_t>>;
+  using BoundaryConditionConnectivityType = typename std::vector<std::vector<AIM::Types::CGNSInt>>;
   /// @}
 
   /// \name Constructors and destructors
@@ -173,22 +173,24 @@ public:
   /// @{
 private:
   auto checkIfMeshExists() -> void;
-  auto getNumberOfBases() -> int;
-  auto getNumberOfZones() -> int;
-  auto getNumberOfVertices() -> unsigned;
-  auto getNumberOfCells() -> unsigned;
-  auto getNumberOfSections() -> unsigned;
-  auto getNumberOfBoundaryConditions() -> unsigned;
-  auto getNumberOfFamilies() -> unsigned;
-  auto getCellType(int section) -> CGNS_ENUMT(ElementType_t);
+  auto getNumberOfBases() -> AIM::Types::UInt;
+  auto getNumberOfZones() -> AIM::Types::UInt;
+  auto getNumberOfVertices() -> AIM::Types::UInt;
+  auto getNumberOfCells() -> AIM::Types::UInt;
+  auto getNumberOfSections() -> AIM::Types::UInt;
+  auto getNumberOfBoundaryConditions() -> AIM::Types::UInt;
+  auto getNumberOfFamilies() -> AIM::Types::UInt;
+  auto getCellType(AIM::Types::UInt section) -> CGNS_ENUMT(ElementType_t);
   auto addCurrentCellTypeToConnectivityTable(
-    int section, int numberOfVerticesPerCell, ConnectivityTableType& connectivity) -> void;
-  auto getNumberOfConnectivitiesForCellType(int section, short int numVerticesPerCell) -> unsigned;
-  auto addCurrentCellTypeToConnectivityTable(
-    int section, unsigned elementSize, int numberOfVerticesPerCell, ConnectivityTableType& connectivity) -> void;
-  auto getCurrentBoundaryType(int boundary) -> std::tuple<CGNS_ENUMT(BCType_t), std::string, cgsize_t>;
-  auto getCurrentFamilyType(int boundary) -> CGNS_ENUMT(BCType_t);
-  auto writeBoundaryConnectivityIntoArray(int boundary, BoundaryConditionConnectivityType& bcc) -> void;
+    AIM::Types::UInt section, AIM::Types::UInt numberOfVerticesPerCell, ConnectivityTableType& connectivity) -> void;
+  auto getNumberOfConnectivitiesForCellType(AIM::Types::UInt section, AIM::Types::UInt numVerticesPerCell)
+    -> AIM::Types::UInt;
+  auto writeConnectivityTable(AIM::Types::UInt section, AIM::Types::UInt elementSize,
+    AIM::Types::UInt numberOfVerticesPerCell, ConnectivityTableType& connectivity) -> void;
+  auto getCurrentBoundaryType(AIM::Types::UInt boundary)
+    -> std::tuple<CGNS_ENUMT(BCType_t), std::string, AIM::Types::UInt>;
+  auto getCurrentFamilyType(AIM::Types::UInt boundary) -> CGNS_ENUMT(BCType_t);
+  auto writeBoundaryConnectivityIntoArray(AIM::Types::UInt boundary, BoundaryConditionConnectivityType& bcc) -> void;
   /// @}
 
   /// \name Encapsulated data (private or protected variables)
@@ -197,10 +199,10 @@ private:
   const std::filesystem::path meshFile_{};
   const short int dimensions_{0};
   int fileIndex_{0};
-  unsigned numberOfVertices_{0};
-  unsigned numberOfCells_{0};
-  unsigned numberOfBCs_{0};
-  unsigned numberOfFamilies_{0};
+  AIM::Types::UInt numberOfVertices_{0};
+  AIM::Types::UInt numberOfCells_{0};
+  AIM::Types::UInt numberOfBCs_{0};
+  AIM::Types::UInt numberOfFamilies_{0};
   /// @}
 };
 

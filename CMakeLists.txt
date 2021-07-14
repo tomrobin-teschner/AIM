@@ -30,5 +30,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC cgns::cgns)
 # add source files to main target by traversing source folders
 add_subdirectory(src)
 
-# add soure files to testing targets by traversing test folders
-add_subdirectory(tests)
+# add soure files to testing targets by traversing test folders if build type is debug
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_subdirectory(tests)
+endif()

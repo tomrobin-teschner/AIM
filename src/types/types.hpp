@@ -4,10 +4,19 @@
 
 #pragma once
 
+#include "cgnslib.h"
+
 namespace AIM {
 namespace Types {
 
+// type used for all floating point numbers
 using FloatType = double;
+
+// type used to store large integer numbers (e.g. number of elements / cells) or for indexing arrays
+using UInt = unsigned;
+
+// wrapper around int defined in the CGNS library
+using CGNSInt = cgsize_t;
 
 }  // namespace Types
 }  // end namespace AIM

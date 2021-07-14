@@ -8,7 +8,6 @@
 #include <exception>
 #include <filesystem>
 #include <iostream>
-#include <ranges>
 #include <tuple>
 #include <vector>
 
@@ -18,6 +17,7 @@
 // AIM include headers
 #include "src/computationalMesh/meshReading/meshReading.hpp"
 #include "src/types/enums.hpp"
+#include "src/types/types.hpp"
 
 namespace AIM {
 namespace Mesh {
@@ -55,11 +55,11 @@ auto MeshReader::readConnectivityTable() -> ConnectivityTableType {
   connectivity.reserve(numberOfCells_);
 
   auto numberOfSections = getNumberOfSections();
-  for (int section = 0; section < numberOfSections; ++section) {
+  for (AIM::Types::UInt section = 0; section < numberOfSections; ++section) {
     auto cellType = getCellType(section);
     if (dimensions_ == AIM::Enum::Dimension::Two) {
-      if (cellType == CGNS_ENUMV(TRI_3)) addCurrentCellTypeToConnectivityTable(section, 3, connectivity);
-      if (cellType == CGNS_ENUMV(QUAD_4)) addCurrentCellTypeToConnectivityTable(section, 4, connectivity);
+      if (cellType == CGNS_ENUMV(TRI_3)) addCurrentCellTypeToConnectivityTable(section, 3u, connectivity);
+      if (cellType == CGNS_ENUMV(QUAD_4)) addCurrentCellTypeToConnectivityTable(section, 4u, connectivity);
     } else if (dimensions_ == AIM::Enum::Dimension::Three) {
       throw std::runtime_error("currently 3D mesh reading is not implemented");
     }
@@ -71,7 +71,7 @@ auto MeshReader::readConnectivityTable() -> ConnectivityTableType {
 auto MeshReader::readBoundaryConditions() -> BoundaryConditionType {
   auto bc = BoundaryConditionType{};
 
-  for (int boundary = 0; boundary < numberOfBCs_; ++boundary) {
+  for (AIM::Types::UInt boundary = 0; boundary < numberOfBCs_; ++boundary) {
     auto [boundaryConditionType, boundaryName, _] = getCurrentBoundaryType(boundary);
     if (boundaryConditionType == CGNS_ENUMV(FamilySpecified)) {
       auto familyBCType = getCurrentFamilyType(boundary);
@@ -90,7 +90,8 @@ auto MeshReader::readBoundaryConditions() -> BoundaryConditionType {
 }
 auto MeshReader::readBoundaryConditionConnectivity() -> BoundaryConditionConnectivityType {
   auto bcc = BoundaryConditionConnectivityType(numberOfBCs_);
-  for (int boundary = 0; boundary < numberOfBCs_; ++boundary) writeBoundaryConnectivityIntoArray(boundary, bcc);
+  for (AIM::Types::UInt boundary = 0; boundary < numberOfBCs_; ++boundary)
+    writeBoundaryConnectivityIntoArray(boundary, bcc);
   return bcc;
 }
 /// @}
@@ -117,134 +118,141 @@ auto MeshReader::checkIfMeshExists() -> void {
   }
 }
 
-auto MeshReader::getNumberOfBases() -> int {
-  int numberOfBases{0};
+auto MeshReader::getNumberOfBases() -> AIM::Types::UInt {
+  auto numberOfBases = int{0};
   auto errorCode = cg_nbases(fileIndex_, &numberOfBases);
   assert(errorCode == 0 && "Could not read number of bases from file");
-  return numberOfBases;
+  return static_cast<AIM::Types::UInt>(numberOfBases);
 }
 
-auto MeshReader::getNumberOfZones() -> int {
-  int numberOfZones{0};
+auto MeshReader::getNumberOfZones() -> AIM::Types::UInt {
+  auto numberOfZones = int{0};
   auto errorCode = cg_nzones(fileIndex_, 1, &numberOfZones);
   assert(errorCode == 0 && "Could not read number of bases from file");
-  return numberOfZones;
+  return static_cast<AIM::Types::UInt>(numberOfZones);
 }
 
-auto MeshReader::getNumberOfVertices() -> unsigned {
-  cgsize_t gridSizeProperties[3][1]{};
+auto MeshReader::getNumberOfVertices() -> AIM::Types::UInt {
+  AIM::Types::CGNSInt gridSizeProperties[3][1]{};
   char zoneName[64];
   auto errorCode = cg_zone_read(fileIndex_, 1, 1, zoneName, gridSizeProperties[0]);
   assert(errorCode == 0 && "Could not read number of vertices from zone");
-  return gridSizeProperties[0][0];
+  return static_cast<AIM::Types::UInt>(gridSizeProperties[0][0]);
 }
 
-auto MeshReader::getNumberOfCells() -> unsigned {
-  cgsize_t gridSizeProperties[3][1]{};
+auto MeshReader::getNumberOfCells() -> AIM::Types::UInt {
+  AIM::Types::CGNSInt gridSizeProperties[3][1]{};
   char zoneName[64];
   auto errorCode = cg_zone_read(fileIndex_, 1, 1, zoneName, gridSizeProperties[0]);
   assert(errorCode == 0 && "Could not read number of cells from zone");
-  return gridSizeProperties[1][0];
+  return static_cast<AIM::Types::UInt>(gridSizeProperties[1][0]);
 }
 
-auto MeshReader::getNumberOfSections() -> unsigned {
+auto MeshReader::getNumberOfSections() -> AIM::Types::UInt {
   auto numberOfSections = int{0};
   auto errorCode = cg_nsections(fileIndex_, 1, 1, &numberOfSections);
   assert(errorCode == 0 && "Could not read number of sections from file");
   assert(numberOfSections > 0 && "No sections found, but required to set up connectivity table!");
-  return numberOfSections;
+  return static_cast<AIM::Types::UInt>(numberOfSections);
 }
 
-auto MeshReader::getNumberOfBoundaryConditions() -> unsigned {
-  auto numBCs = cgsize_t{0};
+auto MeshReader::getNumberOfBoundaryConditions() -> AIM::Types::UInt {
+  auto numBCs = int{0};
   auto errorCode = cg_nbocos(fileIndex_, 1, 1, &numBCs);
   assert(errorCode == 0 && "Could not read number of boundary conditions from file");
-  return numBCs;
+  return static_cast<AIM::Types::UInt>(numBCs);
 }
 
-auto MeshReader::getNumberOfFamilies() -> unsigned {
-  auto numFamilies = cgsize_t{0};
+auto MeshReader::getNumberOfFamilies() -> AIM::Types::UInt {
+  auto numFamilies = int{0};
   auto errorCode = cg_nfamilies(fileIndex_, 1, &numFamilies);
   assert(errorCode == 0 && "Could not read number of families from file");
-  return numFamilies;
+  return static_cast<AIM::Types::UInt>(numFamilies);
 }
 
-auto MeshReader::getCellType(int section) -> CGNS_ENUMT(ElementType_t) {
-  auto begin = cgsize_t{0};
-  auto end = cgsize_t{0};
+auto MeshReader::getCellType(AIM::Types::UInt section) -> CGNS_ENUMT(ElementType_t) {
+  auto begin = AIM::Types::CGNSInt{0};
+  auto end = AIM::Types::CGNSInt{0};
   char sectionName[33]{};
-  auto nbndry = int{0};
-  auto iparentFlag = int{0};
+  auto indexOfLastElement = int{0};
+  auto parentDataExist = int{0};
   auto cellType = CGNS_ENUMT(ElementType_t){};
 
-  auto errorCode =
-    cg_section_read(fileIndex_, 1, 1, section + 1, sectionName, &cellType, &begin, &end, &nbndry, &iparentFlag);
+  auto errorCode = cg_section_read(fileIndex_, 1, 1, static_cast<int>(section + 1), sectionName, &cellType, &begin,
+    &end, &indexOfLastElement, &parentDataExist);
   assert(errorCode == 0 && "Could not read section from zone");
   return cellType;
 }
 
 auto MeshReader::addCurrentCellTypeToConnectivityTable(
-  int section, int numberOfVerticesPerCell, ConnectivityTableType &connectivity) -> void {
+  AIM::Types::UInt section, AIM::Types::UInt numberOfVerticesPerCell, ConnectivityTableType &connectivity) -> void {
   auto numberOfConnectivities = getNumberOfConnectivitiesForCellType(section, numberOfVerticesPerCell);
-  addCurrentCellTypeToConnectivityTable(section, numberOfConnectivities, numberOfVerticesPerCell, connectivity);
+  writeConnectivityTable(section, numberOfConnectivities, numberOfVerticesPerCell, connectivity);
 }
 
-auto MeshReader::getNumberOfConnectivitiesForCellType(int section, short int numberOfVerticesPerCell) -> unsigned {
-  auto elementSize = cgsize_t{0};
-  auto errorCode = cg_ElementDataSize(fileIndex_, 1, 1, section + 1, &elementSize);
+auto MeshReader::getNumberOfConnectivitiesForCellType(
+  AIM::Types::UInt section, AIM::Types::UInt numberOfVerticesPerCell) -> AIM::Types::UInt {
+  auto elementSize = AIM::Types::CGNSInt{0};
+  auto errorCode = cg_ElementDataSize(fileIndex_, 1, 1, static_cast<int>(section + 1), &elementSize);
   assert(errorCode == 0 && "Could not read element size from section");
-  assert(elementSize % numberOfVerticesPerCell == 0 &&
+  assert(static_cast<AIM::Types::UInt>(elementSize) % numberOfVerticesPerCell == 0 &&
          "error reading elements, number of connectivities not divisible by number of vertices per cell");
-  return elementSize;
+  return static_cast<AIM::Types::UInt>(elementSize);
 }
 
-auto MeshReader::addCurrentCellTypeToConnectivityTable(
-  int section, unsigned elementSize, int numberOfVerticesPerCell, ConnectivityTableType &connectivity) -> void {
-  auto iparentdata = cgsize_t{0};
-  auto temp = std::vector<cgsize_t>{};
+auto MeshReader::writeConnectivityTable(AIM::Types::UInt section, AIM::Types::UInt elementSize,
+  AIM::Types::UInt numberOfVerticesPerCell, ConnectivityTableType &connectivity) -> void {
+  auto parentData = AIM::Types::CGNSInt{0};
+  auto temp = std::vector<AIM::Types::CGNSInt>{};
   temp.resize(elementSize);
 
-  auto errorCode = cg_elements_read(fileIndex_, 1, 1, section + 1, &temp[0], &iparentdata);
+  auto errorCode = cg_elements_read(fileIndex_, 1, 1, static_cast<int>(section + 1), &temp[0], &parentData);
+  assert(errorCode == 0 && "Could not read elements from current section");
 
   auto numberOfElements = elementSize / numberOfVerticesPerCell;
-  for (unsigned i = 0; i < numberOfElements; ++i) {
+  for (AIM::Types::UInt i = 0; i < numberOfElements; ++i) {
     auto offset = i * numberOfVerticesPerCell;
-    auto localElementConnectivity = std::vector<cgsize_t>{};
+    auto localElementConnectivity = std::vector<AIM::Types::UInt>{};
     localElementConnectivity.reserve(numberOfElements);
-    for (int vertex = 0; vertex < numberOfVerticesPerCell; ++vertex)
-      localElementConnectivity.push_back(temp[offset + vertex]);
+    for (AIM::Types::UInt vertex = 0; vertex < numberOfVerticesPerCell; ++vertex)
+      localElementConnectivity.push_back(static_cast<AIM::Types::UInt>(temp[offset + vertex]));
     connectivity.push_back(localElementConnectivity);
   }
 }
 
-auto MeshReader::getCurrentBoundaryType(int boundary) -> std::tuple<CGNS_ENUMT(BCType_t), std::string, cgsize_t> {
-  int normalindex[3], ndataset;
-  char boconame[64];
-  CGNS_ENUMT(BCType_t) ibocotype;
-  CGNS_ENUMT(PointSetType_t) iptset;
-  CGNS_ENUMT(DataType_t) normaldatatype;
-  cgsize_t npts, normallistflag;
+auto MeshReader::getCurrentBoundaryType(AIM::Types::UInt boundary)
+  -> std::tuple<CGNS_ENUMT(BCType_t), std::string, AIM::Types::UInt> {
+  int indexOfNormalVector[3], numberOfDatasets;
+  char boundaryName[64];
+  CGNS_ENUMT(BCType_t) boundaryElementType;
+  CGNS_ENUMT(PointSetType_t) pointSetType;
+  CGNS_ENUMT(DataType_t) normalVectorType;
+  AIM::Types::CGNSInt normalVectorsExistFlag, numberOfBoundaryElements{0};
 
-  auto errorCode = cg_boco_info(fileIndex_, 1, 1, boundary + 1, boconame, &ibocotype, &iptset, &npts, normalindex,
-    &normallistflag, &normaldatatype, &ndataset);
+  auto errorCode =
+    cg_boco_info(fileIndex_, 1, 1, static_cast<int>(boundary + 1), boundaryName, &boundaryElementType, &pointSetType,
+      &numberOfBoundaryElements, indexOfNormalVector, &normalVectorsExistFlag, &normalVectorType, &numberOfDatasets);
   assert(errorCode == 0 && "Could not read boundary condition from boundary node");
-  return {ibocotype, std::string(boconame), npts};
+  return {boundaryElementType, std::string(boundaryName), static_cast<AIM::Types::UInt>(numberOfBoundaryElements)};
 }
-auto MeshReader::getCurrentFamilyType(int boundary) -> CGNS_ENUMT(BCType_t) {
+
+auto MeshReader::getCurrentFamilyType(AIM::Types::UInt boundary) -> CGNS_ENUMT(BCType_t) {
   char familyBCName[64];
   CGNS_ENUMT(BCType_t) ifamilytype;
 
-  auto errorCode = cg_fambc_read(fileIndex_, 1, boundary + 2, 1, familyBCName, &ifamilytype);
+  auto errorCode = cg_fambc_read(fileIndex_, 1, static_cast<int>(boundary + 2), 1, familyBCName, &ifamilytype);
   assert(errorCode == 0 && "Could not read boundary condition from family node");
   return ifamilytype;
 }
-auto MeshReader::writeBoundaryConnectivityIntoArray(int boundary, BoundaryConditionConnectivityType &bcc) -> void {
-  auto normallist = int{0};
-  auto ipnts = std::vector<cgsize_t>{};
-  auto [ibocotype, boconame, npts] = getCurrentBoundaryType(boundary);
-  ipnts.resize(npts);
-  cg_boco_read(fileIndex_, 1, 1, boundary + 1, &ipnts[0], &normallist);
-  bcc[boundary] = ipnts;
+
+auto MeshReader::writeBoundaryConnectivityIntoArray(AIM::Types::UInt boundary, BoundaryConditionConnectivityType &bcc)
+  -> void {
+  auto normalVectorList = int{0};
+  auto boundaryConnectivityTable = std::vector<AIM::Types::CGNSInt>{};
+  auto [boundaryElementType, boundaryName, numberOfBoundaryElements] = getCurrentBoundaryType(boundary);
+  boundaryConnectivityTable.resize(numberOfBoundaryElements);
+  cg_boco_read(fileIndex_, 1, 1, static_cast<int>(boundary + 1), &boundaryConnectivityTable[0], &normalVectorList);
+  bcc[boundary] = boundaryConnectivityTable;
 }
 /// @}
 
