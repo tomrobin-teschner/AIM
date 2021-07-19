@@ -1,5 +1,3 @@
-add_subdirectory(computationalMesh)
-
 # add compiler flags
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
@@ -11,3 +9,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     >
 )
 endif()
+
+add_subdirectory(computationalMesh)
+add_subdirectory(parameterFileHandling)
+add_subdirectory(utilities)

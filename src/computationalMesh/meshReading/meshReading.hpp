@@ -161,7 +161,8 @@ public:
 
   /// \name Getters and setters
   /// @{
-
+public:
+  auto getDimensions() const -> short int { return dimensions_; }
   /// @}
 
   /// \name Overloaded operators

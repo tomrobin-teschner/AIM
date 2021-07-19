@@ -42,10 +42,8 @@ MeshReader::MeshReader(const std::filesystem::path &meshFile, short int dimensio
   numberOfFamilies_ = getNumberOfFamilies();
 }
 
-MeshReader::~MeshReader() {
-  auto errorCode = cg_close(fileIndex_);
-  assert(errorCode == 0 && "Error closing CGNS file");
-}
+// TODO: add error checking, if destructor called twice, error will be raised
+MeshReader::~MeshReader() { cg_close(fileIndex_); }
 /// @}
 
 /// \name API interface that exposes behaviour to the caller
@@ -114,6 +112,7 @@ auto MeshReader::checkIfMeshExists() -> void {
       throw std::runtime_error(std::string("can't find the following file: " + meshFile_.string()));
   } catch (const std::exception &e) {
     std::cout << e.what() << std::endl;
+    std::cout << "Tried opening file from current path (" << std::filesystem::current_path() << ")" << std::endl;
     std::terminate();
   }
 }
