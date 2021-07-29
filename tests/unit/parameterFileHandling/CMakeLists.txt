@@ -1,2 +1,0 @@
-add_subdirectory(dataContainer)
-add_subdirectory(parameterManager)

@@ -8,6 +8,7 @@
 #include <exception>
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -16,18 +17,18 @@
 
 // AIM include headers
 #include "src/computationalMesh/meshReading/meshReading.hpp"
+#include "src/parameterFileReading/parameterFileReading.hpp"
 #include "src/types/enums.hpp"
 #include "src/types/types.hpp"
+#include "src/utilities/fileChecker/fileChecker.hpp"
 
 namespace AIM {
 namespace Mesh {
 
 /// \name Constructors and destructors
 /// @{
-MeshReader::MeshReader(const std::filesystem::path &meshFile, short int dimensions)
-    : meshFile_(meshFile), dimensions_(dimensions) {
-  checkIfMeshExists();
-
+MeshReader::MeshReader(short int dimensions) : dimensions_(dimensions) {
+  readParameters();
   assert(dimensions_ == AIM::Enum::Dimension::Two && "Currently only 2D meshes are supported");
 
   auto errorCode = cg_open(meshFile_.string().c_str(), CG_MODE_READ, &fileIndex_);
@@ -106,15 +107,13 @@ auto MeshReader::readBoundaryConditionConnectivity() -> BoundaryConditionConnect
 
 /// \name Private or protected implementation details, not exposed to the caller
 /// @{
-auto MeshReader::checkIfMeshExists() -> void {
-  try {
-    if (!std::filesystem::exists(meshFile_))
-      throw std::runtime_error(std::string("can't find the following file: " + meshFile_.string()));
-  } catch (const std::exception &e) {
-    std::cout << e.what() << std::endl;
-    std::cout << "Tried opening file from current path (" << std::filesystem::current_path() << ")" << std::endl;
-    std::terminate();
-  }
+auto MeshReader::readParameters() -> void {
+  auto inputFile = std::filesystem::path{"input/aim.json"};
+  auto parameter = std::string{"/mesh/filename"};
+  auto defaultValue = std::filesystem::path{"input/mesh.cgns"};
+  meshFile_ = AIM::Parameters::ParameterFileReading::readParameterOrGetDefaultValue<std::filesystem::path>(
+    inputFile, parameter, defaultValue);
+  AIM::Utilities::FileChecker::checkIfFileExists(meshFile_);
 }
 
 auto MeshReader::getNumberOfBases() -> AIM::Types::UInt {

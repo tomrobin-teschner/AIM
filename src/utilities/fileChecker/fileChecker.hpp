@@ -1,12 +1,11 @@
 // This file is part of Artificial-based Incompressibile Methods (AIM), a CFD solver for exact projection
 // methods based on hybrid Artificial compressibility and Pressure Projection methods.
-// (c) by Tom-Robin Teschner 2021-present. This file is distribuited under the MIT license.
+// (c) by Tom-Robin Teschner 2021. This file is distribuited under the MIT license.
 
 #pragma once
 
 // c++ include headers
-#include <any>
-#include <string>
+#include <filesystem>
 
 // third-party include headers
 
@@ -15,12 +14,12 @@
 // concept definition
 
 namespace AIM {
-namespace Parameters {
+namespace Utilities {
 
 /**
- * \class DataContainer
+ * \class FileChecker
  * \brief Brief description (one line)
- * \ingroup Parameters
+ * \ingroup utilities
  *
  * Purpose of class with example usage below (in code section)
  *
@@ -29,7 +28,7 @@ namespace Parameters {
  * \endcode
  */
 
-class DataContainer {
+class FileChecker {
   /// \name Custom types used in this class
   /// @{
 
@@ -38,21 +37,19 @@ class DataContainer {
   /// \name Constructors and destructors
   /// @{
 public:
-  DataContainer(const std::string& name, const std::string& description, const std::any& data);
+  FileChecker() = delete;
+  FileChecker(const FileChecker& other) = delete;
   /// @}
 
   /// \name API interface that exposes behaviour to the caller
   /// @{
-
+public:
+  static auto checkIfFileExists(const std::filesystem::path& file) -> void;
   /// @}
 
   /// \name Getters and setters
   /// @{
-public:
-  auto getName() const -> std::string { return name_; }
-  auto getDescription() const -> std::string { return description_; }
-  template <typename DestinationType>
-  auto getValue() const -> DestinationType;
+
   /// @}
 
   /// \name Overloaded operators
@@ -67,14 +64,11 @@ public:
 
   /// \name Encapsulated data (private or protected variables)
   /// @{
-private:
-  const std::string name_;
-  const std::string description_;
-  std::any data_;
+
   /// @}
 };
 
-}  // namespace Parameters
+}  // namespace Utilities
 }  // end namespace AIM
 
-#include "src/parameterFileHandling/dataContainer/dataContainer.tpp"
+#include "fileChecker.tpp"

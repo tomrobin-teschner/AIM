@@ -12,7 +12,11 @@ target_include_directories(computationalMeshTest PRIVATE ${PROJECT_SOURCE_DIR})
 # copy required mesh files into test executable directory
 add_custom_command(TARGET computationalMeshTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy
 ${PROJECT_SOURCE_DIR}/tests/testingResources/mesh/test2D.cgns
-${CMAKE_BINARY_DIR}/tests/unit/computationalMesh)
+${CMAKE_BINARY_DIR}/tests/unit/computationalMesh/input/mesh.cgns)
+
+add_custom_command(TARGET computationalMeshTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy
+${PROJECT_SOURCE_DIR}/tests/testingResources/inputFiles/aim.json
+${CMAKE_BINARY_DIR}/tests/unit/computationalMesh/input/aim.json)
 
 # let CTest find gtests
 gtest_discover_tests(computationalMeshTest)

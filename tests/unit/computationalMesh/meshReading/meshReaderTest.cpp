@@ -19,7 +19,7 @@ public:
   MeshReadingFixture() {}
 
 protected:
-  AIM::Mesh::MeshReader meshReader_{std::filesystem::path("test2D.cgns"), AIM::Enum::Dimension::Two};
+  AIM::Mesh::MeshReader meshReader_{AIM::Enum::Dimension::Two};
 };
 
 TEST_F(MeshReadingFixture, testReadCoordinates) {

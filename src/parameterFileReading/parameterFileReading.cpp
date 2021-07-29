@@ -3,10 +3,12 @@
 // (c) by Tom-Robin Teschner 2021-present. This file is distribuited under the MIT license.
 
 // c++ include headers
+#include <filesystem>
 
 // third-party include headers
 
 // AIM include headers
+#include "src/parameterFileReading/parameterFileReading.hpp"
 
 namespace AIM {
 namespace Parameters {
@@ -33,9 +35,14 @@ namespace Parameters {
 
 /// \name Private or protected implementation details, not exposed to the caller
 /// @{
-
+auto ParameterFileReading::getJSONFile(const std::filesystem::path& file) -> nlohmann::json {
+  AIM::Utilities::FileChecker::checkIfFileExists(file);
+  std::ifstream rawFile(file);
+  auto jsonFile = nlohmann::json{};
+  rawFile >> jsonFile;
+  return jsonFile;
+}
 /// @}
 
-
-}// namespace Parameters
-}// end namespace AIM
+}  // namespace Parameters
+}  // end namespace AIM

@@ -11,5 +11,5 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 add_subdirectory(computationalMesh)
-add_subdirectory(parameterFileHandling)
+add_subdirectory(parameterFileReading)
 add_subdirectory(utilities)

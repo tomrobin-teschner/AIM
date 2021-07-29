@@ -1,6 +1,6 @@
 // This file is part of Artificial-based Incompressibile Methods (AIM), a CFD solver for exact projection
 // methods based on hybrid Artificial compressibility and Pressure Projection methods.
-// (c) by Tom-Robin Teschner 2021-present. This file is distribuited under the MIT license.
+// (c) by Tom-Robin Teschner 2021. This file is distribuited under the MIT license.
 
 // c++ include headers
 
@@ -9,7 +9,7 @@
 // AIM include headers
 
 namespace AIM {
-namespace Parameters {
+namespace Utilities {
 
 /// \name Constructors and destructors
 /// @{
@@ -18,10 +18,7 @@ namespace Parameters {
 
 /// \name API interface that exposes behaviour to the caller
 /// @{
-template <typename DestinationType>
-auto DataContainer::getValue() const -> DestinationType {
-  return std::any_cast<DestinationType>(data_);
-}
+
 /// @}
 
 /// \name Getters and setters
@@ -39,5 +36,10 @@ auto DataContainer::getValue() const -> DestinationType {
 
 /// @}
 
-}  // namespace Parameters
+/// \name Encapsulated data (private or protected variables)
+/// @{
+
+/// @}
+
+}  // namespace Utilities
 }  // end namespace AIM

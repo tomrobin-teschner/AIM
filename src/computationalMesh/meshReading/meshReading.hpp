@@ -145,7 +145,7 @@ public:
   /// \name Constructors and destructors
   /// @{
 public:
-  MeshReader(const std::filesystem::path& meshFile, short int dimensions);
+  MeshReader(short int dimensions);
   ~MeshReader();
   /// @}
 
@@ -173,7 +173,7 @@ public:
   /// \name Private or protected implementation details, not exposed to the caller
   /// @{
 private:
-  auto checkIfMeshExists() -> void;
+  auto readParameters() -> void;
   auto getNumberOfBases() -> AIM::Types::UInt;
   auto getNumberOfZones() -> AIM::Types::UInt;
   auto getNumberOfVertices() -> AIM::Types::UInt;
@@ -197,8 +197,8 @@ private:
   /// \name Encapsulated data (private or protected variables)
   /// @{
 private:
-  const std::filesystem::path meshFile_{};
   const short int dimensions_{0};
+  std::filesystem::path meshFile_{""};
   int fileIndex_{0};
   AIM::Types::UInt numberOfVertices_{0};
   AIM::Types::UInt numberOfCells_{0};
