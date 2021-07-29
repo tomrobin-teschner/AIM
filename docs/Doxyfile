@@ -845,6 +845,9 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ../src/
+INPUT                 += manual/
+INPUT                 += manual/userGuide
+INPUT                 += manual/developerGuide
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -933,7 +936,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../src/template
+EXCLUDE                = ../src/template 
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1042,7 +1045,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = docs/manual/index.md
+USE_MDFILE_AS_MAINPAGE = manual/index.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
